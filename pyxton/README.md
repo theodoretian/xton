@@ -1,5 +1,7 @@
 # pyxton Python 库
 
+## \[中|[English](pyxton/README-E.md)\]
+
 `pyxton` 是一个高性能的 Python 库，用于解析和序列化 XTon (Xiao Tian Object Notation) 数据格式。它通过 C 语言扩展实现了核心逻辑，旨在提供与 Python 标准 `json` 模块兼容的 API 接口，同时保证了卓越的性能。
 
 XTon 是一种轻量级的数据格式，旨在通过简化语法，提供比 JSON 更简洁、高效的数据表示和传输方式。
