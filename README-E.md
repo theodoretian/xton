@@ -19,10 +19,6 @@ The design goal of `XTon` is to:
 
 Unlike JSON, `XTon` avoids the heavy use of braces, quotation marks, and commas by using a more compact symbolic syntax.
 
-XTon 数据格式文档
-
-----------
-
 ## Data Types
 
 `XTon` supports the following data types:
@@ -215,6 +211,7 @@ Ideal for applications that require a simpler and more compact data representati
 ## Conclusion
 
 `XTon` provides a concise and efficient way to represent and transmit data.  
+
 By reducing redundant symbols and introducing a simple escaping system, it offers a more compact and readable alternative to JSON.
 
 If you are looking for a lightweight data format, `XTon` may be a strong candidate.
