@@ -1,5 +1,7 @@
 # pyxton Python Library
 
+## \[[中](pyxton/README-E.md)\]
+
 `pyxton` is a high-performance Python library for parsing and serializing the XTon (Xiao Tian Object Notation) data format. It implements its core logic via a C extension, aiming to provide an API interface compatible with Python's standard `json` module, while ensuring excellent performance.
 
 XTon is a lightweight data format designed to offer a more concise and efficient way to represent and transmit data compared to JSON, by simplifying its syntax.
