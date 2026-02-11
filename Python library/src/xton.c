@@ -476,7 +476,7 @@ static PyObject* _serialize_to_xton(PyObject* obj) {
     }
     if (PyFloat_Check(obj)) {
         // PyObject_Repr for float might include 'L' or 'j' for complex, so we convert directly
-        // to string for more control, or use repr for simplicity
+        // to string for more control, or or use repr for simplicity
         return PyObject_Repr(obj); 
     }
     if (PyUnicode_Check(obj)) {

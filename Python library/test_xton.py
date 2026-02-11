@@ -20,12 +20,11 @@ class TestXTonLoads(unittest.TestCase):
         self.assertEqual(loads("-0.5"), -0.5)
 
     def test_loads_booleans(self):
-        self.assertTrue(loads("	rue"))
-        self.assertFalse(loads("\false"))
+        self.assertTrue(loads(r"\true"))
+        self.assertFalse(loads(r"\false"))
 
     def test_loads_none(self):
-        self.assertIsNone(loads("
-one"))
+        self.assertIsNone(loads(r"\none"))
 
     def test_loads_invalid_format(self):
         with self.assertRaises(ValueError):
@@ -35,40 +34,39 @@ one"))
         self.assertEqual(loads("''"), "")
         self.assertEqual(loads("'hello'"), "hello")
         self.assertEqual(loads("'hello world'"), "hello world")
-        self.assertEqual(loads("'hello\-world'"), "hello-world")
-        self.assertEqual(loads("'hello\<world'"), "hello<world")
-        self.assertEqual(loads("'hello\>world'"), "hello>world")
-        self.assertEqual(loads("'hello\[world'"), "hello[world")
-        self.assertEqual(loads("'hello\]world'"), "hello]world")
-        self.assertEqual(loads("'hello\/world'"), "hello/world")
-        self.assertEqual(loads("'23.5'"), "23.5")
+        self.assertEqual(loads(r"'hello\-world'"), "hello-world")
+        self.assertEqual(loads(r"'hello\<world'"), "hello<world")
+        self.assertEqual(loads(r"'hello\>world'"), "hello>world")
+        self.assertEqual(loads(r"'hello\[world'"), "hello[world")
+        self.assertEqual(loads(r"'hello\]world'"), "hello]world")
+        self.assertEqual(loads(r"'hello\/world'"), "hello/world")
+        self.assertEqual(loads(r"'23.5'"), "23.5")
+        self.assertEqual(loads(r"'hello\\world'"), "hello\\world") # Added test for escaped backslash
+        self.assertEqual(loads(r"'hello\'world'"), "hello'world") # Added test for escaped single quote
 
     def test_loads_arrays(self):
         self.assertEqual(loads("[]"), [])
         self.assertEqual(loads("[a/25.3/87]"), ["a", 25.3, 87.0])
-        self.assertEqual(loads("[	rue/hello/
-one]"), [True, "hello", None]) 
+        self.assertEqual(loads(r"[\true/hello/\none]"), [True, "hello", None]) 
         self.assertEqual(loads("[1/[2/3]/4]"), [1.0, [2.0, 3.0], 4.0])
 
     def test_loads_objects(self):
         self.assertEqual(loads("<>"), {})
-        self.assertEqual(loads("q-<a-
-one/k-	rue/g-[a/25.3/87]>"), {"q": {"a": None, "k": True, "g": ["a", 25.3, 87.0]}})
+        self.assertEqual(loads(r"q-<a-\none/k-\true/g-[a/25.3/87]>"), {"q": {"a": None, "k": True, "g": ["a", 25.3, 87.0]}})
         self.assertEqual(loads("<key-value>"), {"key": "value"})
-        self.assertEqual(loads("<'quoted key'-'quoted value'>"), {"quoted key": "quoted value"})
-        self.assertEqual(loads("<num-123/bool-	rue>"), {"num": 123.0, "bool": True})
+        self.assertEqual(loads(r"<'quoted key'-'quoted value'>"), {"quoted key": "quoted value"})
+        self.assertEqual(loads(r"<num-123/bool-\true>"), {"num": 123.0, "bool": True})
         self.assertEqual(loads("<obj-<a-1/b-2>>"), {"obj": {"a": 1.0, "b": 2.0}})
 
 
 class TestXTonDumps(unittest.TestCase):
 
     def test_dumps_none(self):
-        self.assertEqual(dumps(None), "
-one")
+        self.assertEqual(dumps(None), r"\none")
 
     def test_dumps_booleans(self):
-        self.assertEqual(dumps(True), "	rue")
-        self.assertEqual(dumps(False), "\false")
+        self.assertEqual(dumps(True), r"\true")
+        self.assertEqual(dumps(False), r"\false")
 
     def test_dumps_numbers(self):
         self.assertEqual(dumps(123), "123")
@@ -81,35 +79,49 @@ one")
         self.assertEqual(dumps("hello"), "'hello'")
         self.assertEqual(dumps("hello world"), "'hello world'")
         # Test escaping
-        self.assertEqual(dumps("hello-world"), "'hello\-world'")
-        self.assertEqual(dumps("hello<world"), "'hello\<world'")
-        self.assertEqual(dumps("hello>world"), "'hello\>world'")
-        self.assertEqual(dumps("hello[world"), "'hello\[world'")
-        self.assertEqual(dumps("hello]world"), "'hello\]world'")
-        self.assertEqual(dumps("hello/world"), "'hello\/world'")
-        self.assertEqual(dumps("hello'world"), "'hello'world'")
+        self.assertEqual(dumps("hello-world"), r"'hello\-world'")
+        self.assertEqual(dumps("hello<world"), r"'hello\<world'")
+        self.assertEqual(dumps("hello>world"), r"'hello\>world'")
+        self.assertEqual(dumps("hello[world"), r"'hello\[world'")
+        self.assertEqual(dumps("hello]world"), r"'hello\]world'")
+        self.assertEqual(dumps("hello/world"), r"'hello\/world'")
+        self.assertEqual(dumps("hello'world"), r"'hello\'world'") 
+        self.assertEqual(dumps("hello\\world"), r"'hello\\world'") # Added test for escaped backslash
         self.assertEqual(dumps("23.5"), "'23.5'") # Should be quoted as it's a string
 
     def test_dumps_arrays(self):
         self.assertEqual(dumps([]), "[]")
         self.assertEqual(dumps(["a", 25.3, 87]), "[a/25.3/87]")
-        self.assertEqual(dumps([True, "hello", None]), "[	rue/hello/
-one]") 
+        self.assertEqual(dumps([True, "hello", None]), r"[\true/hello/\none]") 
         self.assertEqual(dumps([1, [2, 3], 4]), "[1/[2/3]/4]")
         self.assertEqual(dumps([1.0, [2.0, 3.0], 4.0]), "[1.0/[2.0/3.0]/4.0]") # Ensure float output matches loads expects
 
     def test_dumps_objects(self):
-        self.assertEqual(dumps({"q": {"a": None, "k": True, "g": ["a", 25.3, 87]}}), "q-<a-
-one/k-	rue/g-[a/25.3/87]>")
+        self.assertEqual(dumps({"q": {"a": None, "k": True, "g": ["a", 25.3, 87]}}), r"q-<a-\none/k-\true/g-[a/25.3/87]>")
         self.assertEqual(dumps({"key": "value"}), "key-'value'") 
-        self.assertEqual(dumps({"quoted key": "quoted value"}), "<'quoted key'-'quoted value'>")
-        self.assertEqual(dumps({"num": 123, "bool": True}), "<num-123/bool-	rue>")
+        self.assertEqual(dumps({"quoted key": "quoted value"}), r"<'quoted key'-'quoted value'>")
+        self.assertEqual(dumps({"num": 123, "bool": True}), r"<num-123/bool-\true>")
         self.assertEqual(dumps({"obj": {"a": 1, "b": 2}}), "obj-<a-1/b-2>")
         
         # Test keys that need quoting
-        self.assertEqual(dumps({"-key": "value"}), "<'\-key'-'value'>")
-        self.assertEqual(dumps({"key/name": "value"}), "<'key\/name'-'value'>")
-        self.assertEqual(dumps({"key name": "value"}), "<'key name'-'value'>") # Space needs quoting as it's a delimiter
+        actual_output_negative_key = dumps({"-key": "value"})
+        # print(f"DEBUG: Actual dumps output for -key: {actual_output_negative_key!r}") # Removed debug print
+        # print(f"DEBUG: Expected string literal evaluation for -key: {r"<'\\-key'-'value'>"!r}") # Removed debug print
+        self.assertEqual(actual_output_negative_key, "<'\\-key'-'value'>") # Corrected expected output for escaped backslash in test case
+        
+        actual_output_slash_key = dumps({"key/name": "value"})
+        # print(f"DEBUG: Actual dumps output for key/name: {actual_output_slash_key!r}") # Removed debug print
+        # print(f"DEBUG: Expected string literal evaluation for key/name: {r"<'key\\/name'-'value'>"!r}") # Removed debug print
+        self.assertEqual(actual_output_slash_key, "<'key\\/name'-'value'>")
+        
+        actual_output_space_key = dumps({"key name": "value"})
+        # print(f"DEBUG: Actual dumps output for key name: {actual_output_space_key!r}") # Removed debug print
+        self.assertEqual(actual_output_space_key, r"<'key name'-'value'>") # Space needs quoting as it's a delimiter
+        
+        actual_output_backslash_key = dumps({"key\\name": "value"})
+        # print(f"DEBUG: Actual dumps output for key\\name: {actual_output_backslash_key!r}") # Removed debug print
+        # print(f"DEBUG: Expected string literal evaluation for key\\name: {r"<'key\\\\name'-'value'>"!r}") # Removed debug print
+        self.assertEqual(actual_output_backslash_key, "<'key\\\\name'-'value'>") # Corrected expected output for escaped backslash in key
 
     def test_dumps_and_loads_consistency(self):
         data = {
@@ -200,8 +212,7 @@ class TestXTonEncoderDecoder(unittest.TestCase):
     def test_decoder_decode_valid(self):
         decoder = XTONDecoder()
         self.assertEqual(decoder.decode("123"), 123.0)
-        self.assertEqual(decoder.decode("q-<a-
-one>"), {"q": {"a": None}})
+        self.assertEqual(decoder.decode(r"q-<a-\none>"), {"q": {"a": None}})
 
     def test_decoder_decode_invalid(self):
         decoder = XTONDecoder()

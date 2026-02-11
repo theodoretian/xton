@@ -92,6 +92,7 @@ print(xton.dumps("hello world")) # Output: 'hello world'
 
 # 序列化包含特殊字符的字符串（会自动转义和引用）
 print(xton.dumps("hello/world")) # Output: 'hello\/world'
+print(xton.dumps("hello\\world")) # Output: 'hello\\world'
 print(xton.dumps("hello-world")) # Output: 'hello\-world'
 
 # 序列化列表
@@ -173,7 +174,6 @@ XTon 格式具有以下特点：
 * `/` → `\/`
 * `\` → `\\`
 * `'` → `\'`
-* `'` → `'`
 
 有关 XTon 格式的更详细说明，请参阅 [XTon 数据格式文档](file:///Users/flora.lee/Downloads/XTon%20数据格式文档.md)。
 
